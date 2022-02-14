@@ -50,7 +50,6 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
-
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
                 {
@@ -97,10 +96,13 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet
 
                                  var userName =result.UserInfo.DisplayableId;
 
-                                 //A améliorer car on perd avec le scope de business central le username et le name dans le claims controller...  ce que j'ai fait en dessous ne fonctionne pas
-                                 #region Ne fonctionne pas 
+                                //HttpContext.Current.Request.Cookies["AuthToken"] = result.AccessToken;
 
-                                 if (!string.IsNullOrEmpty(userName))
+
+                                //A améliorer car on perd avec le scope de business central le username et le name dans le claims controller...  ce que j'ai fait en dessous ne fonctionne pas
+                                #region Ne fonctionne pas 
+
+                                if (!string.IsNullOrEmpty(userName))
                                  {
                                      
                                      //((ClaimsIdentity)incomingPrincipal.Identity).AddClaim(new Claim(ClaimTypes.NameIdentifier, "User"));
@@ -120,18 +122,11 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet
 
                                  }
 
-                                 #endregion
+                                #endregion
 
-                                 //  context.AuthenticationTicket.Identity.AddClaim(new System.Security.Claims.Claim("urn:oidc:access_token", result.AccessToken));
-                                 var httpClient = new System.Net.Http.HttpClient();
-                                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", result.AccessToken);
-
-                                 const string environmentsUri = "https://api.businesscentral.dynamics.com/v2.0/d1176b80-8023-4b7a-adc8-99a22336517f/SBLawyer-DEMO/api/SBConsulting/SBLawyer/v1.0/companies(867e17c6-e1ed-ea11-aa61-00224838d3b2)/matters";
-
-                                 var response = httpClient.GetAsync(environmentsUri).Result;
-                                 var content = response.Content.ReadAsStringAsync().Result;
-                                 Console.WriteLine(content);
-                             }
+                                 System.Web.HttpContext.Current.Session["IdToken_Ticket"] = result.AccessToken;
+                                
+                            }
                         }
                     }
                 }
